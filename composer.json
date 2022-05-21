@@ -2,7 +2,7 @@
     "name": "ajay/folder-automation",
     "autoload": {
         "psr-4": {
-            "Ajay\\FolderAutomation\\": "src/"
+            "App\\": "src/"
         }
     },
     "authors": [
