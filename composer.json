@@ -1,0 +1,16 @@
+{
+    "name": "ajay/folder-automation",
+    "autoload": {
+        "psr-4": {
+            "Ajay\\FolderAutomation\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Ajay"
+        }
+    ],
+    "require": {
+        "illuminate/support": "^9.13"
+    }
+}
