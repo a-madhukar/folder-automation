@@ -4,21 +4,7 @@ require __DIR__ . '/vendor/autoload.php';
 
 use App\MoveFilesToTarget;
 
-// $item = collect(scandir('/Users/ajay/Desktop'))->filter(function ($name) {
-//     return str_contains(strtolower($name), 'recording'); 
-// })->filter(function ($name) {
-//     return !is_dir('/Users/ajay/Desktop/' . $name); 
-// })
-// ->first(); 
-
-// var_dump($item); 
-// var_dump(pathinfo($item, PATHINFO_EXTENSION)); 
-
-// exit(); 
-
 $config = require 'config.php'; 
-
-// var_dump($config); 
 
 if (!count($config)) {
     exit("No config values provided. Add a config value to continue"); 
@@ -54,9 +40,3 @@ foreach ($config as $name => $values)
         $values['needle']
     );
 }
-
-// MoveFilesToTarget::handle(
-//     "/Users/ajay/Desktop", 
-//     "/Users/ajay/Desktop/Screenshots",
-//     "screenshot", 
-// ); 
