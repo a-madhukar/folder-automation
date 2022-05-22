@@ -8,31 +8,56 @@ class MoveFilesToTarget
 
     protected $targetDir; 
 
-    protected $dirItems; 
+    protected $dirItems;
+
+    protected $fileTypes; 
 
     protected $needle; 
 
-    public function __construct ($sourceDir, $targetDir, $needle) 
+    protected $ignoreDirectories; 
+
+    public function __construct (
+        $sourceDir, 
+        $targetDir, 
+        $fileTypes = '', 
+        $needle = ''
+    ) 
     {
+        // var_dump($fileTypes); 
        $this->sourceDir = rtrim($sourceDir, "/"); 
        $this->targetDir = rtrim($targetDir, "/");
-       $this->needle = $needle; 
+       $this->fileTypes = empty($fileTypes) ? '' : collect(explode('|', $fileTypes)); 
+       $this->needle = $needle;
+       $this->ignoreDirectories = true; 
        $this->dirItems = $this->filterDirItems(
            scandir($this->sourceDir)
         ); 
+        
     }
 
-    public static function handle ($sourceDir, $targetDir, $needle = 'screenshot') 
+    public static function handle (
+        $sourceDir, 
+        $targetDir, 
+        $fileTypes = '', 
+        $needle = ''
+    ) 
     {
         return (
-            new static($sourceDir, $targetDir, $needle)
+            new static($sourceDir, $targetDir, $fileTypes,  $needle)
         )->execute(); 
     }
 
     protected function execute ()  
     {
-        // 1. kill script if there are no dirItems
-        $this->killScriptIfNoDirItems(); 
+        // exit($this->fileTypes); 
+        // skip if there are no dir Items
+        // $this->killScriptIfNoDirItems(); 
+        if (!count($this->dirItems)) 
+        {
+            
+            echo "No items present for " . $this->fileTypes . "\n"; 
+            return null; 
+        }
 
         // 2. Create target Dir if it doesn't exist
         $this->createTargetDir(); 
@@ -73,14 +98,51 @@ class MoveFilesToTarget
      */
     protected function filterDirItems ($dirItems)  
     {
-        return collect($dirItems)->filter(function ($item) {
-            return str_contains(
-                strtolower($item), 
-                $this->needle
-            );
-        })->filter(function ($fileName) {
-            return !is_dir($this->sourceDir . '/' . $fileName);
-        });
+        $items = collect($dirItems); 
+
+        if (count($this->fileTypes)) 
+        {
+            $items = $items->filter(function ($item) {
+                // var_dump($item); 
+                // var_dump($this->fileTypes->contains(pathinfo($item, PATHINFO_EXTENSION))); 
+                // var_dump(pathinfo($item, PATHINFO_EXTENSION)); 
+                return $this->fileTypes->contains(
+                    pathinfo($item, PATHINFO_EXTENSION)
+                ); 
+            }); 
+        } 
+
+        // var_dump(count($items)); 
+
+        if (!empty($this->needle)) 
+        {
+            $items = $items->filter(function ($item) {
+                return str_contains(
+                    strtolower($item),
+                    strtolower($this->needle)
+                );
+            }); 
+        }
+
+        // var_dump(count($items)); 
+
+        if ($this->ignoreDirectories) 
+        {
+            $items = $items->filter(function ($fileName) {
+
+                if (
+                    $this->fileTypes->contains('app') && pathinfo($fileName, PATHINFO_EXTENSION) == 'app'
+                ) {
+                    return true; 
+                }
+
+                return !is_dir($this->sourceDir . '/' . $fileName);
+            }); 
+        }
+
+        // var_dump(count($items)); 
+
+        return $items; 
     }
 }
 

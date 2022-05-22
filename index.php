@@ -4,6 +4,18 @@ require __DIR__ . '/vendor/autoload.php';
 
 use App\MoveFilesToTarget;
 
+// $item = collect(scandir('/Users/ajay/Desktop'))->filter(function ($name) {
+//     return str_contains(strtolower($name), 'recording'); 
+// })->filter(function ($name) {
+//     return !is_dir('/Users/ajay/Desktop/' . $name); 
+// })
+// ->first(); 
+
+// var_dump($item); 
+// var_dump(pathinfo($item, PATHINFO_EXTENSION)); 
+
+// exit(); 
+
 $config = require 'config.php'; 
 
 // var_dump($config); 
@@ -38,6 +50,7 @@ foreach ($config as $name => $values)
     MoveFilesToTarget::handle(
         $values['sourceDir'],
         $values['targetDir'],
+        $values['fileTypes'], 
         $values['needle']
     );
 }
